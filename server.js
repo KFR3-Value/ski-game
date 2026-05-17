@@ -34,6 +34,7 @@ const server = http.createServer((req, res) => {
     });
 });
 
-server.listen(8081, '127.0.0.1', () => {
-    console.log('Server running at http://127.0.0.1:8081/');
+const PORT = process.env.PORT || 8081;
+server.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running at http://0.0.0.0:${PORT}/`);
 });
