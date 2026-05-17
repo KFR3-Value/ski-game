@@ -188,7 +188,7 @@ function getSkierHeight(x, z) {
 }
 
 // Game State
-let gameState = 'intro'; // intro, playing, finished, failed
+let gameState = 'landing'; // landing, intro, playing, finished, failed
 let timeElapsed = 0;
 let speed = 0;
 let lateralSpeed = 0;
@@ -205,6 +205,56 @@ const timerEl = document.getElementById('timer-value');
 const screenEl = document.getElementById('message-screen');
 const mainMsgEl = document.getElementById('main-message');
 const subMsgEl = document.getElementById('sub-message');
+
+// Landing Page Logic
+function initLandingPage() {
+    const targetDate = new Date('2026-07-30T00:00:00').getTime();
+
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const distance = targetDate - now;
+
+        if (distance < 0) {
+            document.getElementById('cd-days').innerText = '00';
+            document.getElementById('cd-hours').innerText = '00';
+            document.getElementById('cd-minutes').innerText = '00';
+            document.getElementById('cd-seconds').innerText = '00';
+            return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById('cd-days').innerText = String(days).padStart(2, '0');
+        document.getElementById('cd-hours').innerText = String(hours).padStart(2, '0');
+        document.getElementById('cd-minutes').innerText = String(minutes).padStart(2, '0');
+        document.getElementById('cd-seconds').innerText = String(seconds).padStart(2, '0');
+    }
+
+    // Initial call and set interval
+    updateCountdown();
+    const countdownInterval = setInterval(updateCountdown, 1000);
+
+    // Trigger Button
+    document.getElementById('secret-trigger').addEventListener('click', () => {
+        clearInterval(countdownInterval);
+
+        // Hide landing page
+        document.getElementById('landing-page').style.display = 'none';
+
+        // Show game wrapper
+        document.getElementById('game-wrapper').style.display = 'block';
+
+        // Initialize 3D game
+        init();
+
+        // Activate service room and transition state
+        document.getElementById('service-room').classList.add('active');
+        gameState = 'menu';
+    });
+}
 
 function init() {
     scene = new THREE.Scene();
@@ -1407,13 +1457,21 @@ function animate() {
                 // If the player is outside the gate bounds when passing its Z axis
                 if (skier.position.x < gate.minX || skier.position.x > gate.maxX) {
                     gameState = 'failed';
-                    screenEl.classList.add('active');
-                    mainMsgEl.innerText = "bschiiissii siech";
-                    subMsgEl.innerText = "zrugg an start!!";
+
+                    // Display Whiteout Result Modal
+                    document.getElementById('result-modal').style.display = 'flex';
+                    const modalTitle = document.getElementById('modal-title');
+                    modalTitle.innerText = "MISSION FAILED";
+                    modalTitle.style.color = "#f87171";
+
+                    document.getElementById('modal-body').innerHTML = '<p style="color: #9ca3af; font-size: 14px;">Kollision oder Tor verpasst. Sensoren neu kalibrieren.</p>';
+
+                    const btn = document.getElementById('modal-confirm');
+                    btn.className = "modal-btn-red";
+                    btn.innerText = "Neustart";
+
                     speedEl.innerText = "0";
                     
-                    // Auto restart after 3 seconds
-                    setTimeout(() => { window.location.reload(); }, 3000);
                     return; // exit the loop
                 }
             }
@@ -1474,9 +1532,24 @@ function animate() {
         // Cutscene Trigger right after crossing the finish line
         if (skier.position.z <= finishLineZ + 10) {
             gameState = 'cutscene';
-            screenEl.classList.add('active');
-            mainMsgEl.innerText = "Yeehaw!";
-            subMsgEl.innerText = `Time: ${formatTime(timeElapsed)}\nHappy Bachelor Party!`;
+
+            // Display Whiteout Result Modal
+            document.getElementById('result-modal').style.display = 'flex';
+            const modalTitle = document.getElementById('modal-title');
+            modalTitle.innerText = "ACCESS GRANTED";
+            modalTitle.style.color = "#22d3ee";
+
+            document.getElementById('modal-body').innerHTML = `
+                <div style="border-top: 1px solid #1f2937; border-bottom: 1px solid #1f2937; padding: 24px 0; margin: 24px 0;">
+                    <p style="font-size: 12px; color: #6b7280; text-transform: uppercase; margin-bottom: 8px;">Decrypted Message:</p>
+                    <p style="color: #ffffff; font-size: 18px; font-weight: 300; line-height: 1.625;">"Pack die Badehose ein, aber vergiss die Mütze nicht."</p>
+                </div>
+            `;
+
+            const btn = document.getElementById('modal-confirm');
+            btn.className = "modal-btn-cyan";
+            btn.innerText = "Bestätigen";
+
             speedEl.innerText = "0";
         }
     } 
@@ -1517,4 +1590,5 @@ function animate() {
     renderer.render(scene, camera);
 }
 
-init();
+// Start with the landing page
+initLandingPage();
