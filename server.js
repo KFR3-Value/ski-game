@@ -3,8 +3,8 @@ const fs = require('fs');
 const path = require('path');
 
 const server = http.createServer((req, res) => {
-    // Strip query strings (?v=2) so they don't become part of the file path
-    const urlPath = req.url.split('?')[0];
+    // Strip query strings (?v=2) and decode URL components (e.g. %20 -> space)
+    const urlPath = decodeURIComponent(req.url.split('?')[0]);
     let filePath = '.' + urlPath;
     if (filePath === './') filePath = './index.html';
 
@@ -15,6 +15,7 @@ const server = http.createServer((req, res) => {
         case '.css': contentType = 'text/css'; break;
         case '.png': contentType = 'image/png'; break;
         case '.jpg': contentType = 'image/jpeg'; break;
+        case '.mp4': contentType = 'video/mp4'; break;
     }
 
     fs.readFile(filePath, (error, content) => {
@@ -33,6 +34,7 @@ const server = http.createServer((req, res) => {
     });
 });
 
-server.listen(8081, '127.0.0.1', () => {
-    console.log('Server running at http://127.0.0.1:8081/');
+const PORT = process.env.PORT || 8081;
+server.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running at http://0.0.0.0:${PORT}/`);
 });

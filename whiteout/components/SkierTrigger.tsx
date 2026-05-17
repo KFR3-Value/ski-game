@@ -9,7 +9,7 @@ const SkierTrigger: React.FC<SkierTriggerProps> = ({ onTrigger }) => {
     <div className="fixed bottom-0 left-0 w-full h-24 overflow-hidden pointer-events-none z-20">
       {/* Decorative snow line */}
       <div className="absolute bottom-0 w-full h-px bg-gray-800 opacity-50" />
-      
+
       {/* Patrolling Skier Container */}
       <div className="absolute bottom-2 w-full animate-patrol pointer-events-auto">
         <button

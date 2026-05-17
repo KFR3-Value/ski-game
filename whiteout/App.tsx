@@ -59,7 +59,7 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-night text-white font-mono overflow-hidden relative selection:bg-neon selection:text-night">
-      
+
       {/* Background Ambience */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-[#1a1a2e] to-night opacity-50 z-0 pointer-events-none" />
 
@@ -92,12 +92,12 @@ const App: React.FC = () => {
       {(modalOpen && (gameState === GameState.WON || gameState === GameState.LOST)) && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm animate-in fade-in duration-300">
           <div className="bg-night border border-neon/30 p-8 max-w-sm w-full text-center shadow-[0_0_30px_rgba(34,211,238,0.15)]">
-            
+
             {gameState === GameState.LOST && (
               <>
                 <h2 className="text-2xl font-bold text-red-500 mb-4 tracking-widest">MISSION FAILED</h2>
                 <p className="text-gray-400 mb-8 text-sm">Kollision oder Tor verpasst. Sensoren neu kalibrieren.</p>
-                <button 
+                <button
                   onClick={resetGame}
                   className="w-full py-3 border border-red-500/50 text-red-400 hover:bg-red-500/10 transition-colors uppercase tracking-widest text-sm"
                 >
@@ -115,8 +115,8 @@ const App: React.FC = () => {
                     "Pack die Badehose ein, aber vergiss die Mütze nicht."
                   </p>
                 </div>
-                <button 
-                  onClick={() => window.location.reload()} 
+                <button
+                  onClick={() => window.location.reload()}
                   className="w-full py-3 bg-neon text-night font-bold hover:bg-cyan-300 transition-colors uppercase tracking-widest text-sm"
                 >
                   Bestätigen
