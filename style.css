@@ -1,0 +1,400 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body, html {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: #a0d8ef; /* Wintry sky blue fallback */
+}
+
+#game-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+#ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999; /* Force in front of WebGL canvas */
+    transform: translateZ(0); /* Hardware accelerated compositing layer */
+    pointer-events: none; 
+}
+
+/* Top Right UI (Speed & Timer) */
+#stats-container {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 12px 20px;
+    border-radius: 4px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    transform: skewX(-12deg) translateZ(0); /* Skew and hardware acceleration */
+    z-index: 10001;
+}
+
+.stat-box {
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+    gap: 10px;
+    transform: skewX(12deg);
+}
+
+.stat-line {
+    width: 100%;
+    height: 2px;
+    background: #eee;
+    margin: 5px 0;
+}
+
+.stat-label {
+    font-weight: 700;
+    font-size: 16px;
+    color: #333;
+}
+
+.stat-value {
+    font-weight: 900;
+    font-size: 32px;
+    color: #000;
+    min-width: 60px;
+    text-align: right;
+    letter-spacing: -1px;
+}
+
+.timer {
+    font-size: 22px;
+    color: #e53935;
+}
+
+/* Touch Controls */
+#controls-container {
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 40px;
+    pointer-events: auto;
+}
+
+.touch-zone {
+    width: 150px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.thumb-track {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 40px;
+    position: relative;
+    backdrop-filter: blur(4px);
+    width: 120px;
+    height: 50px;
+}
+
+.thumb-knob {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    position: absolute;
+    top: 3px;
+    left: 5px; 
+    transition: transform 0.1s ease-out;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* Message Screens */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translateZ(0);
+}
+
+.screen.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#main-message {
+    color: white;
+    font-size: 5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    text-shadow: 0 4px 15px rgba(0,0,0,0.8);
+    text-align: center;
+    line-height: 1.2;
+    transform: skewX(-10deg);
+}
+
+.sub-message {
+    font-size: 2rem;
+    color: #ffca28;
+    display: block;
+    margin-top: 15px;
+    text-transform: none;
+    font-weight: bold;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    #stats-container { top: 15px; right: 15px; transform: none; padding: 10px; }
+    .stat-box { transform: none; }
+    .stat-value { font-size: 24px; }
+    .timer { font-size: 18px; }
+    #main-message { font-size: 3rem; transform: none;}
+    .sub-message { font-size: 1.5rem; }
+    #controls-container { padding: 0 20px; bottom: 20px; }
+}
+
+/* SERVICE ROOM UI */
+#service-room {
+    background: transparent !important; /* No dark full-screen backdrop, floating vibe */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    display: none;
+    flex-direction: column;
+    z-index: 10000;
+    transform: translateZ(0);
+    transition: none !important; /* Instant hide when selecting Race Now */
+    opacity: 1 !important; /* Overrides screen fade out behavior */
+    pointer-events: none; /* Mouse clicks pass through to 3D scene in center */
+}
+
+#service-room.active {
+    display: flex;
+    align-items: stretch !important; /* Push floating panels to the screen margins */
+}
+
+.sr-topbar {
+    width: calc(100% - 80px);
+    margin: 30px auto 0 auto;
+    border-radius: 12px;
+    height: 60px;
+    background: linear-gradient(90deg, #1e3c72 0%, #2a5298 100%);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    z-index: 10;
+    pointer-events: auto;
+}
+
+.sr-title {
+    font-size: 24px;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: white;
+}
+
+.sr-currency {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ffd700;
+}
+
+.sr-content {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    padding: 40px;
+    pointer-events: none;
+}
+
+/* Left Panel */
+.sr-left-panel {
+    width: 350px;
+    display: flex;
+    flex-direction: column;
+    pointer-events: auto;
+}
+
+.sr-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.sr-card {
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.sr-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 30px rgba(0,0,0,0.25);
+}
+
+.sr-card.tall {
+    height: 120px;
+}
+
+.sr-label {
+    color: #333;
+    font-weight: 700;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.sr-card input[type="color"] {
+    width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    padding: 0;
+}
+.sr-card input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0; 
+}
+.sr-card input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 8px;
+}
+
+/* Right Panel */
+.sr-right-panel {
+    width: 350px;
+    background: rgba(15, 30, 60, 0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    pointer-events: auto;
+}
+
+.sr-tokens-display {
+    color: #00ffcc;
+    font-size: 18px;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+}
+
+.sr-stat {
+    margin-bottom: 25px;
+}
+
+.stat-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+}
+
+.stat-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.upgrade-btn {
+    width: 30px;
+    height: 30px;
+    background: #f72585;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 20px;
+    font-weight: 900;
+    cursor: pointer;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s;
+}
+
+.upgrade-btn:hover:not(:disabled) {
+    transform: scale(1.1);
+}
+
+.upgrade-btn:disabled {
+    background: #555;
+    color: #888;
+    cursor: not-allowed;
+}
+
+.stat-bar-container {
+    flex: 1;
+    height: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.stat-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #4cc9f0, #f72585);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.start-race-btn {
+    margin-top: auto;
+    background: linear-gradient(45deg, #f72585, #b5179e);
+    color: white;
+    font-size: 24px;
+    font-weight: 900;
+    padding: 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(247, 37, 133, 0.4);
+    transition: transform 0.2s;
+    text-align: center;
+    display: block;
+}
+
+.start-race-btn:hover {
+    transform: scale(1.05);
+}

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>The Last Run</title>
+    <link rel="stylesheet" href="style.css?v=2">
+    <!-- Load Inter font for sporty UI aesthetic -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="game-container">
+        <!-- Three.js Canvas will be injected here automatically -->
+    </div>
+    
+    <!-- UI Overlay -->
+    <div id="ui-layer">
+        <!-- Top Right Stats (Speedometer & Timer) -->
+        <div id="stats-container">
+            <div class="stat-box">
+                <span class="stat-label">KM/H</span>
+                <span id="speed-value" class="stat-value">0</span>
+            </div>
+            <div class="stat-line"></div>
+            <div class="stat-box">
+                <span id="timer-value" class="stat-value timer">00:00.000</span>
+            </div>
+        </div>
+        
+        <!-- Mobile Touch Controls -->
+        <div id="controls-container">
+            <!-- Left Steering -->
+            <div id="touch-left" class="touch-zone">
+                <div class="thumb-track horizontal">
+                    <div class="thumb-knob" id="knob-left"></div>
+                </div>
+            </div>
+            <!-- Right Steering -->
+            <div id="touch-right" class="touch-zone">
+                <div class="thumb-track horizontal">
+                    <div class="thumb-knob" id="knob-right"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Service Room Screen -->
+        <div id="service-room" class="screen active">
+            <div class="sr-topbar">
+                <div class="sr-title"><span class="icon">🏠</span> SERVICE ROOM</div>
+                <div class="sr-currency">💰 31680 &nbsp; 💠 0</div>
+            </div>
+            
+            <div class="sr-content">
+                <!-- Left Panel: Gear Customization -->
+                <div class="sr-left-panel">
+                    <div class="sr-grid">
+                        <div class="sr-card tall">
+                            <div class="sr-label">Jacket Color</div>
+                            <input type="color" id="color-jacket" value="#1144cc" onchange="updateGearColor()">
+                        </div>
+                        <div class="sr-card tall">
+                            <div class="sr-label">Pants Color</div>
+                            <input type="color" id="color-pants" value="#3366dd" onchange="updateGearColor()">
+                        </div>
+                        <div class="sr-card tall">
+                            <div class="sr-label">Helmet Color</div>
+                            <input type="color" id="color-helmet" value="#111111" onchange="updateGearColor()">
+                        </div>
+                        <div class="sr-card tall">
+                            <div class="sr-label">Ski Color</div>
+                            <input type="color" id="color-skis" value="#222222" onchange="updateGearColor()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Panel: Physics Stats -->
+                <div class="sr-right-panel">
+                    <div class="sr-tokens-display">
+                        AVAILABLE TOKENS: <span id="tokens-count">4</span>
+                    </div>
+
+                    <div class="sr-stat">
+                        <div class="stat-header"><span>Top Speed</span> <span id="val-speed">161</span></div>
+                        <div class="stat-controls">
+                            <button class="upgrade-btn" onclick="upgradeStat('speed', -1)">-</button>
+                            <div class="stat-bar-container"><div id="bar-speed" class="stat-bar" style="width: 0%"></div></div>
+                            <button class="upgrade-btn" onclick="upgradeStat('speed', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="sr-stat">
+                        <div class="stat-header"><span>Acceleration</span> <span id="val-accel">6.00x</span></div>
+                        <div class="stat-controls">
+                            <button class="upgrade-btn" onclick="upgradeStat('accel', -1)">-</button>
+                            <div class="stat-bar-container"><div id="bar-accel" class="stat-bar" style="width: 0%"></div></div>
+                            <button class="upgrade-btn" onclick="upgradeStat('accel', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="sr-stat">
+                        <div class="stat-header"><span>Carve (Turn Speed)</span> <span id="val-carve">35</span></div>
+                        <div class="stat-controls">
+                            <button class="upgrade-btn" onclick="upgradeStat('carve', -1)">-</button>
+                            <div class="stat-bar-container"><div id="bar-carve" class="stat-bar" style="width: 0%"></div></div>
+                            <button class="upgrade-btn" onclick="upgradeStat('carve', 1)">+</button>
+                        </div>
+                    </div>
+                    <div class="sr-stat">
+                        <div class="stat-header"><span>Grip (Edge Hold)</span> <span id="val-grip">0.85</span></div>
+                        <div class="stat-controls">
+                            <button class="upgrade-btn" onclick="upgradeStat('grip', -1)">-</button>
+                            <div class="stat-bar-container"><div id="bar-grip" class="stat-bar" style="width: 0%"></div></div>
+                            <button class="upgrade-btn" onclick="upgradeStat('grip', 1)">+</button>
+                        </div>
+                    </div>
+                    
+                    <button class="start-race-btn" onclick="startIntroCutscene()">RACE NOW</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Cinematic Intro & Outro Screen -->
+        <div id="message-screen" class="screen">
+            <h1 id="main-message">Get Ready...</h1>
+            <span id="sub-message" class="sub-message"></span>
+        </div>
+    </div>
+
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="game.js?v=2"></script>
+</body>
+</html>
