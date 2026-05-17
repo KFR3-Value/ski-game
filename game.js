@@ -6,7 +6,7 @@ let trackLength = 2000;
 let finishLineZ = -700;
 let cameraTarget = new THREE.Vector3();
 let introTimer = 0;
-let skierMatJacket, skierMatPants, skierMatHelmet, skierMatSkis;
+let skierMatJacket, skierMatPants, skierMatHelmet, skierMatSkis, skierMatRightSleeve;
 let startBar;
 let stopwatchCtx, stopwatchTexture; // For the digital Stoppuhr
 
@@ -241,18 +241,76 @@ function initLandingPage() {
     document.getElementById('secret-trigger').addEventListener('click', () => {
         clearInterval(countdownInterval);
 
-        // Hide landing page
-        document.getElementById('landing-page').style.display = 'none';
+        const loaderScreen = document.getElementById('video-loader-screen');
+        const video = document.getElementById('loader-video');
+        const skipBtn = document.getElementById('skip-video-btn');
+        const progressBar = document.getElementById('video-loading-progress');
 
-        // Show game wrapper
-        document.getElementById('game-wrapper').style.display = 'block';
+        // Show video loading screen
+        loaderScreen.classList.add('active');
+        loaderScreen.style.display = 'flex';
 
-        // Initialize 3D game
-        init();
+        // Autoplay the video
+        video.currentTime = 0;
+        video.play().catch(err => {
+            console.warn("Autoplay was blocked or failed, skipping video loading screen.", err);
+            finishVideoAndStartGame();
+        });
 
-        // Activate service room and transition state
-        document.getElementById('service-room').classList.add('active');
-        gameState = 'menu';
+        let isTransitioned = false;
+
+        function finishVideoAndStartGame() {
+            if (isTransitioned) return;
+            isTransitioned = true;
+
+            // Remove event listeners
+            video.removeEventListener('ended', finishVideoAndStartGame);
+            video.removeEventListener('timeupdate', updateProgressBar);
+            video.removeEventListener('error', finishVideoAndStartGame);
+            skipBtn.removeEventListener('click', finishVideoAndStartGame);
+
+            // Clean up/pause video
+            video.pause();
+
+            // Smooth fade out
+            loaderScreen.classList.remove('active');
+            
+            // Wait for fade transition, then switch to game
+            setTimeout(() => {
+                loaderScreen.style.display = 'none';
+                // Release video resource to save memory during intensive 3D game
+                try {
+                    video.src = '';
+                    video.load();
+                } catch(e) {}
+
+                // Hide landing page
+                document.getElementById('landing-page').style.display = 'none';
+
+                // Show game wrapper
+                document.getElementById('game-wrapper').style.display = 'block';
+
+                // Initialize 3D game
+                init();
+
+                // Activate service room and transition state
+                document.getElementById('service-room').classList.add('active');
+                gameState = 'menu';
+            }, 800); // matches CSS transition duration
+        }
+
+        function updateProgressBar() {
+            if (video.duration) {
+                const percent = (video.currentTime / video.duration) * 100;
+                progressBar.style.width = percent + '%';
+            }
+        }
+
+        // Attach event listeners for ending/skipping video
+        video.addEventListener('ended', finishVideoAndStartGame);
+        video.addEventListener('timeupdate', updateProgressBar);
+        video.addEventListener('error', finishVideoAndStartGame); // Skip if video fails to play/load
+        skipBtn.addEventListener('click', finishVideoAndStartGame);
     });
 }
 
@@ -338,6 +396,7 @@ function init() {
     createGates();
     createFinishLine();
     setupControls();
+    window.selectSki('powder');
 
     // Start in menu state before intro
     gameState = 'menu';
@@ -772,28 +831,34 @@ function createSkier() {
     // Premium Physically Based Materials (MeshStandardMaterial)
     // High-fidelity standard shaders are extremely robust and compatible on all GPUs
     skierMatHelmet = new THREE.MeshStandardMaterial({ 
-        color: 0x111111, 
+        color: 0x3a9ad9, 
         roughness: 0.1, 
         metalness: 0.9
-    }); // Shiny helmet composite
+    }); // Shiny helmet composite (fixed light blue)
 
     skierMatJacket = new THREE.MeshStandardMaterial({ 
-        color: 0x1144cc, 
+        color: 0x3a9ad9, 
         roughness: 0.65, 
         metalness: 0.1
-    }); // High-performance jacket
+    }); // High-performance jacket (fixed light blue)
 
     skierMatPants = new THREE.MeshStandardMaterial({ 
-        color: 0x3366dd, 
+        color: 0x3a9ad9, 
         roughness: 0.75, 
         metalness: 0.05
-    }); // High-performance pants
+    }); // High-performance pants (fixed light blue)
+
+    skierMatRightSleeve = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        roughness: 0.65,
+        metalness: 0.1
+    }); // Solid white right sleeve
 
     skierMatSkis = new THREE.MeshStandardMaterial({ 
-        color: 0x222222, 
+        color: 0x00f0ff, 
         roughness: 0.2, 
         metalness: 0.6
-    }); // Composite waxed skis
+    }); // Composite waxed skis (will be updated dynamically by selection)
 
     // Skis
     const skiGeo = new THREE.BoxGeometry(0.15, 0.05, 2.5);
@@ -836,12 +901,13 @@ function createSkier() {
     armGeo.translate(0, -0.35, 0); // Pivot at shoulder (top)
     const armL = new THREE.Mesh(armGeo, skierMatJacket);
     armL.position.set(-0.45, 0.8, 0); 
-    const armR = new THREE.Mesh(armGeo, skierMatJacket);
+    const armR = new THREE.Mesh(armGeo, skierMatRightSleeve);
     armR.position.set(0.45, 0.8, 0);
     torsoPivot.add(armL, armR);
 
     // Poles (attached to hands)
     const poleGeo = new THREE.CylinderGeometry(0.015, 0.015, 1.8, 16);
+    poleGeo.translate(0, -0.9, 0); // Translate by half-height so pivot (0,0,0) is at the TOP of the pole (grip)!
     const poleL = new THREE.Mesh(poleGeo, skierMatSkis);
     poleL.position.set(0, -0.7, 0); // Hand is at bottom of arm
     armL.add(poleL);
@@ -860,7 +926,7 @@ function createSkier() {
             torsoPivot: { pos: [0, 0, 0], rot: [0, 0, 0] },
             armL: { pos: [-0.45, 0.8, 0], rot: [0, 0, 0] },
             armR: { pos: [0.45, 0.8, 0], rot: [0, 0, 0] },
-            poleL: { pos: [0, -0.7, 0], rot: [-0.5, 0, 0] }, // Poles point slightly forward
+            poleL: { pos: [0, -0.7, 0], rot: [-0.5, 0, 0] }, // Tuck aerodynamically backwards & upwards
             poleR: { pos: [0, -0.7, 0], rot: [-0.5, 0, 0] }
         },
         poseTuck: {
@@ -870,7 +936,7 @@ function createSkier() {
             torsoPivot: { pos: [0, 0, 0], rot: [-1.3, 0, 0] }, // Torso leans far DOWNHILL (-Z)
             armL: { pos: [-0.45, 0.8, 0], rot: [0.8, 0, 0] }, // Arms pull BACK relative to torso
             armR: { pos: [0.45, 0.8, 0], rot: [0.8, 0, 0] },
-            poleL: { pos: [0, -0.7, 0], rot: [-1.3, 0, 0] }, // Poles point UP and BACK (uphill)
+            poleL: { pos: [0, -0.7, 0], rot: [-1.3, 0, 0] }, // Perfect tucked aerodynamic pole profile
             poleR: { pos: [0, -0.7, 0], rot: [-1.3, 0, 0] }
         }
     };
@@ -1086,16 +1152,128 @@ function createFinishLine() {
 }
 
 // Global function to be called from HTML
-window.updateGearColor = function() {
-    const jacket = document.getElementById('color-jacket').value;
-    const pants = document.getElementById('color-pants').value;
-    const helmet = document.getElementById('color-helmet').value;
-    const skis = document.getElementById('color-skis').value;
+// ============================================================================
+// SKI EQUIPMENT DATABASE & DYNAMICS
+// ============================================================================
+const SKIS_DATABASE = {
+    powder: {
+        name: "Powder Beast",
+        color: "#00f0ff",
+        stats: {
+            speed: 75,
+            accel: 65,
+            carve: 70,
+            grip: 90,
+            physics: {
+                dragCoeff: 0.52,
+                gravityScale: 6.2,
+                carveImpulse: 36,
+                gripDamping: 0.94
+            }
+        }
+    },
+    downhill: {
+        name: "Downhill Bullet",
+        color: "#d4fc34",
+        stats: {
+            speed: 90,
+            accel: 80,
+            carve: 40,
+            grip: 50,
+            physics: {
+                dragCoeff: 0.44,
+                gravityScale: 7.0,
+                carveImpulse: 28,
+                gripDamping: 0.82
+            }
+        }
+    },
+    slalom: {
+        name: "Slalom Carver",
+        color: "#f72585",
+        stats: {
+            speed: 50,
+            accel: 50,
+            carve: 95,
+            grip: 85,
+            physics: {
+                dragCoeff: 0.62,
+                gravityScale: 5.8,
+                carveImpulse: 48,
+                gripDamping: 0.92
+            }
+        }
+    },
+    carbon: {
+        name: "Carbon Stealth",
+        color: "#ff6600",
+        stats: {
+            speed: 85,
+            accel: 95,
+            carve: 50,
+            grip: 40,
+            physics: {
+                dragCoeff: 0.48,
+                gravityScale: 7.8,
+                carveImpulse: 30,
+                gripDamping: 0.76
+            }
+        }
+    }
+};
+
+let selectedSkiId = 'powder';
+
+// Global function to be called from HTML
+window.selectSki = function(skiId) {
+    if (!SKIS_DATABASE[skiId]) return;
     
-    skierMatJacket.color.set(jacket);
-    skierMatPants.color.set(pants);
-    skierMatHelmet.color.set(helmet);
-    skierMatSkis.color.set(skis);
+    selectedSkiId = skiId;
+    
+    // Update active visual card in the DOM
+    const cards = document.querySelectorAll('.sr-ski-card');
+    cards.forEach(card => {
+        card.classList.remove('active');
+        // Reset box shadow on inactive color indicators
+        const indicator = card.querySelector('.ski-color-indicator');
+        if (indicator) indicator.style.boxShadow = 'none';
+    });
+    
+    const activeCard = document.getElementById('ski-' + skiId);
+    if (activeCard) {
+        activeCard.classList.add('active');
+        // Add custom glowing box-shadow matching selected ski color
+        const indicator = activeCard.querySelector('.ski-color-indicator');
+        if (indicator) {
+            const color = SKIS_DATABASE[skiId].color;
+            indicator.style.boxShadow = `0 0 10px ${color}`;
+        }
+    }
+    
+    // Update 3D ski color in real-time
+    const skiData = SKIS_DATABASE[skiId];
+    if (skierMatSkis) {
+        skierMatSkis.color.set(skiData.color);
+    }
+    
+    // Set dynamic gameplay physics parameters
+    currentDragCoeff = skiData.stats.physics.dragCoeff;
+    currentGravityScale = skiData.stats.physics.gravityScale;
+    currentCarveImpulse = skiData.stats.physics.carveImpulse;
+    currentGripDamping = skiData.stats.physics.gripDamping;
+    
+    // Update right panel stats display with human-friendly values
+    const approxTopSpeed = Math.floor(Math.sqrt(2 * GRAVITY * 0.14 / (currentDragCoeff * AIR_DENSITY * SKIER_FRONTAL_AREA / SKIER_MASS)) * 3.6);
+    document.getElementById('val-speed').innerText = approxTopSpeed;
+    document.getElementById('val-accel').innerText = currentGravityScale.toFixed(2) + 'x';
+    document.getElementById('val-carve').innerText = currentCarveImpulse;
+    document.getElementById('val-grip').innerText = currentGripDamping.toFixed(2);
+    
+    // Animate the progress bars to match the selected ski profile
+    document.getElementById('bar-speed').style.width = skiData.stats.speed + '%';
+    document.getElementById('bar-accel').style.width = skiData.stats.accel + '%';
+    document.getElementById('bar-carve').style.width = skiData.stats.carve + '%';
+    document.getElementById('bar-grip').style.width = skiData.stats.grip + '%';
 };
 
 // ============================================================================
@@ -1108,77 +1286,17 @@ const AIR_DENSITY = 1.225;      // kg/m³ — Sea-level air density (ρ)
 const SKIER_MASS = 85;          // kg — Skier + equipment mass
 const SKIER_FRONTAL_AREA = 0.4; // m² — Tuck position frontal cross-section
 
-// Tunable base coefficients (designed for "slow start, high agility")
-// NOTE: gravityScale is high because the game world is NOT 1:1 meters.
-// The terrain drops 0.2 units/Z-unit (sin(θ)≈0.196), so real g=9.81 alone
-// only gives ~1.9 m/s² — far too slow for arcade feel. Scale of 6.0 gives
-// ~12 m/s² net acceleration, reaching ~80 units/s terminal velocity.
+// Base friction coefficients for the simulation engine
 const baseStats = {
-    gravityScale: 6.0,      // Multiplier on gravitational pull (Accel token)
-    dragCoeff:    0.60,     // Cd — Aerodynamic drag coefficient (Speed token lowers this)
     snowFriction: 0.06,     // μ_snow — Kinetic friction of ski on snow
-    carveImpulse: 35,       // Lateral turn impulse per second (Carve token) — high for agile base
-    gripDamping:  0.85,     // Lateral velocity retention per frame @60fps (Grip token)
-    carveFriction: 0.04     // Edge friction: fraction of forward speed lost per second while carving
+    carveFriction: 0.04     // Edge friction lost while carving
 };
 
-// How much each Service Room token changes the physics
-const stepStats = {
-    speed: 0.10,    // Each token reduces dragCoeff by 10% (multiplicative)
-    accel: 1.0,     // Each token adds +1.0 to gravity scale (6→10 over 4 tokens)
-    carve: 5,       // Each token adds +5 to carve impulse
-    grip:  0.025    // Each token adds +0.025 to grip damping (tighter turns)
-};
-
-// Live physics variables (recalculated when tokens change)
-let currentGravityScale = baseStats.gravityScale;  // 6.0 base
-let currentDragCoeff    = baseStats.dragCoeff;      // 0.60 base
-let currentCarveImpulse = baseStats.carveImpulse;
-let currentGripDamping  = baseStats.gripDamping;
-
-let tokensAvailable = 4;
-let upgrades = { speed: 0, accel: 0, carve: 0, grip: 0 };
-
-function recalcPhysics() {
-    // Speed tokens: reduce drag coefficient (multiplicative reduction)
-    // Each token removes 8% drag → 4 tokens = 0.6 * (1-0.08)^4 ≈ 0.43
-    currentDragCoeff = baseStats.dragCoeff * Math.pow(1 - stepStats.speed, upgrades.speed);
-    
-    // Accel tokens: amplify gravity's pull on the slope
-    currentGravityScale = baseStats.gravityScale + upgrades.accel * stepStats.accel;
-    
-    // Carve tokens: increase lateral turn impulse
-    currentCarveImpulse = baseStats.carveImpulse + upgrades.carve * stepStats.carve;
-    
-    // Grip tokens: tighten lateral damping (less drift)
-    currentGripDamping = Math.min(0.96, baseStats.gripDamping + upgrades.grip * stepStats.grip);
-}
-
-window.upgradeStat = function(stat, change) {
-    if (change > 0 && tokensAvailable <= 0) return;
-    if (change < 0 && upgrades[stat] <= 0) return;
-    if (change > 0 && upgrades[stat] >= 4) return;
-    
-    upgrades[stat] += change;
-    tokensAvailable -= change;
-    
-    recalcPhysics();
-    
-    // Update DOM with human-readable display values
-    document.getElementById('tokens-count').innerText = tokensAvailable;
-    // Show drag as "effective top speed" for player clarity (approx km/h)
-    const approxTopSpeed = Math.floor(Math.sqrt(2 * GRAVITY * 0.14 / (currentDragCoeff * AIR_DENSITY * SKIER_FRONTAL_AREA / SKIER_MASS)) * 3.6);
-    document.getElementById('val-speed').innerText = approxTopSpeed;
-    document.getElementById('val-accel').innerText = currentGravityScale.toFixed(2) + 'x';
-    document.getElementById('val-carve').innerText = currentCarveImpulse;
-    document.getElementById('val-grip').innerText = currentGripDamping.toFixed(2);
-    
-    // Update progress bars (each upgrade is 25% of the bar)
-    document.getElementById('bar-speed').style.width = (upgrades.speed * 25) + '%';
-    document.getElementById('bar-accel').style.width = (upgrades.accel * 25) + '%';
-    document.getElementById('bar-carve').style.width = (upgrades.carve * 25) + '%';
-    document.getElementById('bar-grip').style.width = (upgrades.grip * 25) + '%';
-};
+// Live physics variables
+let currentGravityScale = 6.2;
+let currentDragCoeff    = 0.52;
+let currentCarveImpulse = 36;
+let currentGripDamping  = 0.94;
 
 function startIntroCutscene() {
     gameState = 'intro';
@@ -1460,15 +1578,8 @@ function animate() {
 
                     // Display Whiteout Result Modal
                     document.getElementById('result-modal').style.display = 'flex';
-                    const modalTitle = document.getElementById('modal-title');
-                    modalTitle.innerText = "MISSION FAILED";
-                    modalTitle.style.color = "#f87171";
-
-                    document.getElementById('modal-body').innerHTML = '<p style="color: #9ca3af; font-size: 14px;">Kollision oder Tor verpasst. Sensoren neu kalibrieren.</p>';
-
-                    const btn = document.getElementById('modal-confirm');
-                    btn.className = "modal-btn-red";
-                    btn.innerText = "Neustart";
+                    document.getElementById('fail-modal-box').style.display = 'block';
+                    document.getElementById('success-modal-box').style.display = 'none';
 
                     speedEl.innerText = "0";
                     
@@ -1533,22 +1644,18 @@ function animate() {
         if (skier.position.z <= finishLineZ + 10) {
             gameState = 'cutscene';
 
-            // Display Whiteout Result Modal
+            // Display Success Leaderboard Modal
             document.getElementById('result-modal').style.display = 'flex';
-            const modalTitle = document.getElementById('modal-title');
-            modalTitle.innerText = "ACCESS GRANTED";
-            modalTitle.style.color = "#22d3ee";
+            document.getElementById('fail-modal-box').style.display = 'none';
+            document.getElementById('success-modal-box').style.display = 'block';
 
-            document.getElementById('modal-body').innerHTML = `
-                <div style="border-top: 1px solid #1f2937; border-bottom: 1px solid #1f2937; padding: 24px 0; margin: 24px 0;">
-                    <p style="font-size: 12px; color: #6b7280; text-transform: uppercase; margin-bottom: 8px;">Decrypted Message:</p>
-                    <p style="color: #ffffff; font-size: 18px; font-weight: 300; line-height: 1.625;">"Pack die Badehose ein, aber vergiss die Mütze nicht."</p>
-                </div>
-            `;
-
-            const btn = document.getElementById('modal-confirm');
-            btn.className = "modal-btn-cyan";
-            btn.innerText = "Bestätigen";
+            // Update Michael Krummenacher's score with his actual run time!
+            const finishedTimeStr = document.getElementById('timer-value').innerText;
+            const scoreEl = document.getElementById('krummenacher-score');
+            if (scoreEl) {
+                scoreEl.innerText = finishedTimeStr;
+                scoreEl.className = "score text-gold"; // Highlight his final time in gold!
+            }
 
             speedEl.innerText = "0";
         }
