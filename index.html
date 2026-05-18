@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -8,18 +9,22 @@
     <!-- Load Inter font for sporty UI aesthetic -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <!-- Fullscreen Orientation Lock Overlay -->
     <div id="orientation-overlay" class="orientation-overlay">
         <div class="orientation-box">
             <div class="phone-rotate-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2" style="transform-origin: center; animation: rotatePhoneRect 2.5s infinite ease-in-out;"></rect>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="5" y="2" width="14" height="20" rx="2" ry="2"
+                        style="transform-origin: center; animation: rotatePhoneRect 2.5s infinite ease-in-out;"></rect>
                     <line x1="12" y1="18" x2="12.01" y2="18"></line>
                 </svg>
             </div>
             <h2 class="orientation-title">Querformat aktivieren</h2>
-            <p class="orientation-text">Bitte drehe dein Smartphone horizontal (Querformat), um das Spiel zu starten.</p>
+            <p class="orientation-text">Bitte drehe dein Smartphone horizontal (Querformat), um das Spiel zu starten.
+            </p>
         </div>
     </div>
 
@@ -33,10 +38,22 @@
             <div class="countdown-container">
                 <div class="countdown-subline">MISSION COUNTDOWN</div>
                 <div class="countdown-grid" id="countdown-grid">
-                    <div class="time-unit"><div class="time-value" id="cd-days">00</div><div class="time-label">TAGE</div></div>
-                    <div class="time-unit"><div class="time-value" id="cd-hours">00</div><div class="time-label">STD</div></div>
-                    <div class="time-unit"><div class="time-value" id="cd-minutes">00</div><div class="time-label">MIN</div></div>
-                    <div class="time-unit"><div class="time-value" id="cd-seconds">00</div><div class="time-label">SEK</div></div>
+                    <div class="time-unit">
+                        <div class="time-value" id="cd-days">00</div>
+                        <div class="time-label">TAGE</div>
+                    </div>
+                    <div class="time-unit">
+                        <div class="time-value" id="cd-hours">00</div>
+                        <div class="time-label">STD</div>
+                    </div>
+                    <div class="time-unit">
+                        <div class="time-value" id="cd-minutes">00</div>
+                        <div class="time-label">MIN</div>
+                    </div>
+                    <div class="time-unit">
+                        <div class="time-value" id="cd-seconds">00</div>
+                        <div class="time-label">SEK</div>
+                    </div>
                 </div>
                 <div class="countdown-status">STATUS: VORBEREITUNG LÄUFT</div>
             </div>
@@ -44,7 +61,11 @@
             <!-- Locked Clue -->
             <div class="locked-clue">
                 <div class="locked-clue-header">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
                     <span>SECURE TRANSMISSION</span>
                 </div>
                 <p class="locked-clue-text">
@@ -79,7 +100,7 @@
                 </div>
                 <div class="mission-title">PROJECT KRUMMENACHER JGA</div>
             </div>
-            
+
             <div class="video-loader-footer">
                 <div class="loading-bar-wrapper">
                     <div class="loading-bar-progress" id="video-loading-progress"></div>
@@ -88,7 +109,12 @@
                     <span class="loading-subtext">STREAMING TARGET CONTENT...</span>
                     <button id="skip-video-btn" class="skip-video-btn">
                         <span>SKIP INTRO</span>
-                        <svg class="skip-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 17 18 12 13 7"></polyline><polyline points="6 17 11 12 6 7"></polyline></svg>
+                        <svg class="skip-arrow" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="13 17 18 12 13 7"></polyline>
+                            <polyline points="6 17 11 12 6 7"></polyline>
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -101,7 +127,8 @@
         <div id="fail-modal-box" class="modal-box" style="display: none;">
             <h2 id="fail-modal-title" style="color: #f87171;">MISSION FAILED</h2>
             <div class="modal-body">
-                <p style="color: #9ca3af; font-size: 14px; margin-bottom: 20px;">Kollision oder Tor verpasst. Sensoren neu kalibrieren.</p>
+                <p style="color: #9ca3af; font-size: 14px; margin-bottom: 20px;">Kollision oder Tor verpasst. Sensoren
+                    neu kalibrieren.</p>
             </div>
             <button class="modal-btn-red" onclick="window.location.reload()">NEUSTART</button>
         </div>
@@ -112,7 +139,7 @@
                 <div class="decryption-banner">TRANSMISSION DECRYPTED — ACCESS GRANTED</div>
                 <div class="dashboard-title">PROJECT KRUMMENACHER JGA</div>
             </div>
-            
+
             <div class="dashboard-content">
                 <!-- Left Side: Packing Checklist (Hint) -->
                 <div class="dashboard-left">
@@ -154,28 +181,28 @@
                     </div>
                     <div class="leaderboard-container">
                         <!-- 1 -->
-                        <div class="leaderboard-row gold">
+                        <div class="leaderboard-row active-runner">
                             <span class="rank">01</span>
-                            <span class="name">Yves Spira</span>
-                            <span class="score">23.05.2024</span>
+                            <span class="name">Roman Burkhard</span>
+                            <span class="score">19.04.2024</span>
                         </div>
                         <!-- 2 -->
-                        <div class="leaderboard-row silver">
+                        <div class="leaderboard-row active-runner">
                             <span class="rank">02</span>
-                            <span class="name">Joël Bättig</span>
-                            <span class="score">16.05.2025</span>
+                            <span class="name">Yves Spira</span>
+                            <span class="score">23.05.2024</span>
                         </div>
                         <!-- 3 -->
                         <div class="leaderboard-row active-runner">
                             <span class="rank">03</span>
-                            <span class="name">Roman Burkhard</span>
-                            <span class="score text-highlight">"unknown timing"</span>
+                            <span class="name">Joël Bättig</span>
+                            <span class="score">16.05.2025</span>
                         </div>
                         <!-- 4 (Highlighted Player) -->
                         <div class="leaderboard-row active-runner player-highlight">
                             <span class="rank">04</span>
                             <span class="name">Michael Krummenacher <span class="you-tag">YOU</span></span>
-                            <span class="score text-highlight" id="krummenacher-score">"04.06.2026"</span>
+                            <span class="score text-highlight" id="krummenacher-score">04.06.2026</span>
                         </div>
                         <!-- 5 -->
                         <div class="leaderboard-row active-runner">
@@ -222,7 +249,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="dashboard-footer">
                 <button class="modal-btn-cyan" onclick="window.location.reload()">RACE AGAIN</button>
             </div>
@@ -236,136 +263,202 @@
 
         <!-- UI Overlay -->
         <div id="ui-layer">
-        <!-- Top Right Stats (Speedometer & Timer) -->
-        <div id="stats-container">
-            <div class="stat-box">
-                <span class="stat-label">KM/H</span>
-                <span id="speed-value" class="stat-value">0</span>
-            </div>
-            <div class="stat-line"></div>
-            <div class="stat-box">
-                <span id="timer-value" class="stat-value timer">00:00.000</span>
-            </div>
-        </div>
-        
-        <!-- Mobile Touch Controls -->
-        <div id="controls-container">
-            <!-- Left Steering -->
-            <div id="touch-left" class="touch-zone">
-                <div class="thumb-track horizontal">
-                    <div class="thumb-knob" id="knob-left"></div>
+            <!-- Top Right Stats (Speedometer & Timer) -->
+            <div id="stats-container">
+                <div class="stat-box">
+                    <span class="stat-label">KM/H</span>
+                    <span id="speed-value" class="stat-value">0</span>
+                </div>
+                <div class="stat-line"></div>
+                <div class="stat-box">
+                    <span id="timer-value" class="stat-value timer">00:00.000</span>
                 </div>
             </div>
-            <!-- Right Steering -->
-            <div id="touch-right" class="touch-zone">
-                <div class="thumb-track horizontal">
-                    <div class="thumb-knob" id="knob-right"></div>
+
+            <!-- Mobile Touch Controls -->
+            <div id="controls-container">
+                <!-- Left Steering -->
+                <div id="touch-left" class="touch-zone">
+                    <div class="thumb-track horizontal">
+                        <div class="thumb-knob" id="knob-left"></div>
+                    </div>
+                </div>
+                <!-- Right Steering -->
+                <div id="touch-right" class="touch-zone">
+                    <div class="thumb-track horizontal">
+                        <div class="thumb-knob" id="knob-right"></div>
+                    </div>
                 </div>
             </div>
-        </div>
-        
-        <!-- Service Room Screen -->
-        <div id="service-room" class="screen active">
-            <div class="sr-topbar">
-                <div class="sr-title"><span class="icon">🏠</span> SERVICE ROOM</div>
-                <div class="sr-currency">💰 31680 &nbsp; 💠 0</div>
-            </div>
-            
-            <div class="sr-content">
-                <!-- Left Panel: Ski Gear Customization -->
-                <div class="sr-left-panel">
-                    <!-- Fixed Team Uniform Info -->
-                    <div class="sr-team-uniform">
-                        <div class="sr-uniform-header">
-                            <span class="sr-uniform-tag">OFFICIAL TEAM WEAR</span>
-                            <div class="sr-uniform-title">THE LAST RUN SPECIAL</div>
-                        </div>
-                        <div class="sr-uniform-details">
-                            <div class="sr-uniform-row">
-                                <span class="sr-uniform-dot blue"></span>
-                                <span>Suit & Left Sleeve: <strong style="color: #60a5fa;">Alpine Light Blue</strong></span>
-                            </div>
-                            <div class="sr-uniform-row">
-                                <span class="sr-uniform-dot white"></span>
-                                <span>Right Sleeve: <strong style="color: #ffffff;">Solid White</strong></span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Ski Selector Title -->
-                    <div class="sr-section-title">SELECT RACING SKIS</div>
-                    
-                    <!-- Ski Cards Grid -->
-                    <div class="sr-ski-selector">
-                        <div class="sr-ski-card active" id="ski-powder" onclick="selectSki('powder')">
-                            <div class="ski-color-indicator" style="background-color: #00f0ff; box-shadow: 0 0 10px #00f0ff;"></div>
-                            <div class="ski-info">
-                                <div class="ski-name">Powder Beast</div>
-                                <div class="ski-desc">Balanced hybrid with premium grip.</div>
-                            </div>
-                        </div>
-                        <div class="sr-ski-card" id="ski-downhill" onclick="selectSki('downhill')">
-                            <div class="ski-color-indicator" style="background-color: #d4fc34;"></div>
-                            <div class="ski-info">
-                                <div class="ski-name">Downhill Bullet</div>
-                                <div class="ski-desc">Low aerodynamic drag, maximum speed.</div>
-                            </div>
-                        </div>
-                        <div class="sr-ski-card" id="ski-slalom" onclick="selectSki('slalom')">
-                            <div class="ski-color-indicator" style="background-color: #f72585;"></div>
-                            <div class="ski-info">
-                                <div class="ski-name">Slalom Carver</div>
-                                <div class="ski-desc">Extreme cornering carving edge.</div>
-                            </div>
-                        </div>
-                        <div class="sr-ski-card" id="ski-carbon" onclick="selectSki('carbon')">
-                            <div class="ski-color-indicator" style="background-color: #ff6600;"></div>
-                            <div class="ski-info">
-                                <div class="ski-name">Carbon Stealth</div>
-                                <div class="ski-desc">High gravitational pull & power.</div>
-                            </div>
-                        </div>
-                    </div>
+
+            <!-- Service Room Screen -->
+            <div id="service-room" class="screen active">
+                <div class="sr-topbar">
+                    <div class="sr-title"><span class="icon">🏠</span> SERVICE ROOM</div>
+                    <div class="sr-currency">💰 31680 &nbsp; 💠 0</div>
                 </div>
 
-                <!-- Right Panel: Physics Stats -->
-                <div class="sr-right-panel">
-                    <div class="sr-tokens-display" style="color: #ffffff; letter-spacing: 2px;">
-                        SKI PERFORMANCE
+                <div class="sr-content">
+                    <!-- Left Panel: Ski Gear Customization -->
+                    <div class="sr-left-panel">
+                        <!-- Fixed Team Uniform Info -->
+                        <div class="sr-team-uniform">
+                            <div class="sr-uniform-header">
+                                <span class="sr-uniform-tag">OFFICIAL TEAM WEAR</span>
+                                <div class="sr-uniform-title">THE LAST RUN SPECIAL</div>
+                            </div>
+                            <div class="sr-uniform-details">
+                                <div class="sr-uniform-row">
+                                    <span class="sr-uniform-dot blue"></span>
+                                    <span>Suit & Left Sleeve: <strong style="color: #3b82d6;">Alpine Light
+                                            Blue</strong></span>
+                                </div>
+                                <div class="sr-uniform-row">
+                                    <span class="sr-uniform-dot white"></span>
+                                    <span>Right Sleeve: <strong style="color: #ffffff;">Solid White</strong></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ski Selector Title -->
+                        <div class="sr-section-title">SELECT RACING SKIS</div>
+
+                        <!-- Ski Cards Grid -->
+                        <div class="sr-ski-selector">
+                            <div class="sr-ski-card active" id="ski-powder" onclick="selectSki('powder')">
+                                <div class="ski-color-indicator"
+                                    style="background-color: #00f0ff; box-shadow: 0 0 10px #00f0ff;"></div>
+                                <div class="ski-info">
+                                    <div class="ski-name">Powder Beast</div>
+                                    <div class="ski-desc">Balanced hybrid with premium grip.</div>
+                                </div>
+                            </div>
+                            <div class="sr-ski-card" id="ski-downhill" onclick="selectSki('downhill')">
+                                <div class="ski-color-indicator" style="background-color: #d4fc34;"></div>
+                                <div class="ski-info">
+                                    <div class="ski-name">Downhill Bullet</div>
+                                    <div class="ski-desc">Low aerodynamic drag, maximum speed.</div>
+                                </div>
+                            </div>
+                            <div class="sr-ski-card" id="ski-slalom" onclick="selectSki('slalom')">
+                                <div class="ski-color-indicator" style="background-color: #f72585;"></div>
+                                <div class="ski-info">
+                                    <div class="ski-name">Slalom Carver</div>
+                                    <div class="ski-desc">Extreme cornering carving edge.</div>
+                                </div>
+                            </div>
+                            <div class="sr-ski-card" id="ski-carbon" onclick="selectSki('carbon')">
+                                <div class="ski-color-indicator" style="background-color: #ff6600;"></div>
+                                <div class="ski-info">
+                                    <div class="ski-name">Carbon Stealth</div>
+                                    <div class="ski-desc">High gravitational pull & power.</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="sr-stat">
-                        <div class="stat-header"><span>Top Speed</span> <span id="val-speed">161</span></div>
-                        <div class="stat-bar-container"><div id="bar-speed" class="stat-bar" style="width: 75%"></div></div>
+                    <!-- Right Panel: Physics Stats -->
+                    <div class="sr-right-panel">
+                        <div class="sr-tokens-display" style="color: #ffffff; letter-spacing: 2px;">
+                            SKI PERFORMANCE
+                        </div>
+
+                        <div class="sr-stat">
+                            <div class="stat-header"><span>Top Speed</span> <span id="val-speed">161</span></div>
+                            <div class="stat-bar-container">
+                                <div id="bar-speed" class="stat-bar" style="width: 75%"></div>
+                            </div>
+                        </div>
+                        <div class="sr-stat">
+                            <div class="stat-header"><span>Acceleration</span> <span id="val-accel">6.20x</span></div>
+                            <div class="stat-bar-container">
+                                <div id="bar-accel" class="stat-bar" style="width: 65%"></div>
+                            </div>
+                        </div>
+                        <div class="sr-stat">
+                            <div class="stat-header"><span>Carve (Turn Speed)</span> <span id="val-carve">36</span>
+                            </div>
+                            <div class="stat-bar-container">
+                                <div id="bar-carve" class="stat-bar" style="width: 70%"></div>
+                            </div>
+                        </div>
+                        <div class="sr-stat">
+                            <div class="stat-header"><span>Grip (Edge Hold)</span> <span id="val-grip">0.94</span></div>
+                            <div class="stat-bar-container">
+                                <div id="bar-grip" class="stat-bar" style="width: 90%"></div>
+                            </div>
+                        </div>
+
+                        <button class="start-race-btn" onclick="startIntroCutscene()">RACE NOW</button>
                     </div>
-                    <div class="sr-stat">
-                        <div class="stat-header"><span>Acceleration</span> <span id="val-accel">6.20x</span></div>
-                        <div class="stat-bar-container"><div id="bar-accel" class="stat-bar" style="width: 65%"></div></div>
-                    </div>
-                    <div class="sr-stat">
-                        <div class="stat-header"><span>Carve (Turn Speed)</span> <span id="val-carve">36</span></div>
-                        <div class="stat-bar-container"><div id="bar-carve" class="stat-bar" style="width: 70%"></div></div>
-                    </div>
-                    <div class="sr-stat">
-                        <div class="stat-header"><span>Grip (Edge Hold)</span> <span id="val-grip">0.94</span></div>
-                        <div class="stat-bar-container"><div id="bar-grip" class="stat-bar" style="width: 90%"></div></div>
-                    </div>
-                    
-                    <button class="start-race-btn" onclick="startIntroCutscene()">RACE NOW</button>
                 </div>
             </div>
-        </div>
-        
-        <!-- Cinematic Intro & Outro Screen -->
-        <div id="message-screen" class="screen">
-            <h1 id="main-message">Get Ready...</h1>
-            <span id="sub-message" class="sub-message"></span>
-        </div>
+
+            <!-- Cinematic Intro & Outro Screen -->
+            <div id="message-screen" class="screen">
+                <h1 id="main-message">Get Ready...</h1>
+                <span id="sub-message" class="sub-message"></span>
+            </div>
         </div>
     </div>
+
+    <!-- Floating Spotify Music Player Widget -->
+    <div id="spotify-player-widget" class="spotify-widget-container collapsed">
+        <div class="spotify-widget-header" onclick="toggleSpotifyWidget()">
+            <div class="spotify-widget-title-container">
+                <span class="music-icon">🎵</span>
+                <span class="music-text-collapsed">BACKGROUND MUSIC</span>
+                <span class="music-text-expanded">NOW PLAYING: SUN GOES DOWN</span>
+                <span class="music-status-dot pulsing"></span>
+            </div>
+            <button class="spotify-widget-toggle" aria-label="Toggle music player">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="toggle-icon">
+                    <polyline points="18 15 12 9 6 15"></polyline>
+                </svg>
+            </button>
+        </div>
+        <div class="spotify-widget-content">
+            <div id="spotify-embed-iframe-placeholder"></div>
+        </div>
+    </div>
+
+    <!-- Spotify Iframe API Script -->
+    <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+
+    <script>
+        // Global variables for Spotify player control
+        window.spotifyEmbedController = null;
+
+        window.onSpotifyIframeApiReady = (IFrameAPI) => {
+            const element = document.getElementById('spotify-embed-iframe-placeholder');
+            const options = {
+                uri: 'spotify:track:4zLBcDtvYNVtF9fnG6lme3',
+                width: '100%',
+                height: '352'
+            };
+            const callback = (EmbedController) => {
+                window.spotifyEmbedController = EmbedController;
+            };
+            IFrameAPI.createController(element, options, callback);
+        };
+
+        function toggleSpotifyWidget() {
+            const widget = document.getElementById('spotify-player-widget');
+            const icon = widget.querySelector('.toggle-icon');
+            widget.classList.toggle('collapsed');
+            
+            // Rotate the arrow icon based on state
+            if (widget.classList.contains('collapsed')) {
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+    </script>
 
     <!-- Three.js CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="game.js?v=2"></script>
 </body>
+
 </html>
