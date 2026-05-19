@@ -676,13 +676,27 @@ function createStartHouse() {
     jaegerMesh.rotation.y = Math.PI; // Face downhill
     houseGroup.add(jaegerMesh);
 
-    // Right Side: Mock Driver Picture (Reserved vertical space)
-    const driverTex = createDriverPhotoTexture();
+    // Right Side: Driver Picture (Krummenacher_Athlete.jpeg loaded via Base64 to bypass local file CORS)
+    const driverTex = logoLoader.load(window.KRUMMENACHER_ATHLETE_BASE64 || 'Krummenacher_Athlete.jpeg');
+    driverTex.encoding = THREE.sRGBEncoding;
+
+    // Sleek border frame behind the photo
+    const frameWidth = 2.7;
+    const frameHeight = 4.64;
+    const photoFrameGeo = new THREE.PlaneGeometry(frameWidth, frameHeight);
+    const photoFrameMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff }); // Neon-cyan glow border
+    const photoFrameMesh = new THREE.Mesh(photoFrameGeo, photoFrameMat);
+    photoFrameMesh.position.set(-4.8, 14.2, decalZ);
+    photoFrameMesh.rotation.y = Math.PI;
+    houseGroup.add(photoFrameMesh);
+
+    // The actual photo mesh (slightly smaller and sitting in front of the frame)
+    const photoWidth = 2.5;
+    const photoHeight = 4.44;
     const driverMat = new THREE.MeshBasicMaterial({ map: driverTex });
-    const driverGeo = new THREE.PlaneGeometry(3.5, 4.375); // 4:5 Aspect Ratio
+    const driverGeo = new THREE.PlaneGeometry(photoWidth, photoHeight);
     const driverMesh = new THREE.Mesh(driverGeo, driverMat);
-    // Placed lower and closer to the arch (-4.8, 14.2) for perfect visual weight balance
-    driverMesh.position.set(-4.8, 14.2, decalZ);
+    driverMesh.position.set(-4.8, 14.2, decalZ - 0.02); // Slightly forward to prevent Z-fighting and show border
     driverMesh.rotation.y = Math.PI; // Face downhill
     houseGroup.add(driverMesh);
 

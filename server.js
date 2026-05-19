@@ -14,7 +14,8 @@ const server = http.createServer((req, res) => {
         case '.js': contentType = 'text/javascript'; break;
         case '.css': contentType = 'text/css'; break;
         case '.png': contentType = 'image/png'; break;
-        case '.jpg': contentType = 'image/jpeg'; break;
+        case '.jpg':
+        case '.jpeg': contentType = 'image/jpeg'; break;
         case '.mp4': contentType = 'video/mp4'; break;
     }
 
@@ -35,6 +36,6 @@ const server = http.createServer((req, res) => {
 });
 
 const PORT = process.env.PORT || 8081;
-server.listen(PORT, '0.0.0.0', () => {
-    console.log(`Server running at http://0.0.0.0:${PORT}/`);
+server.listen(PORT, '127.0.0.1', () => {
+    console.log(`Server running at http://127.0.0.1:${PORT}/`);
 });
