@@ -127,10 +127,10 @@
         <div id="fail-modal-box" class="modal-box" style="display: none;">
             <h2 id="fail-modal-title" style="color: #f87171;">MISSION FAILED</h2>
             <div class="modal-body">
-                <p style="color: #9ca3af; font-size: 14px; margin-bottom: 20px;">Kollision oder Tor verpasst. Sensoren
+                <p id="fail-modal-text" style="color: #9ca3af; font-size: 14px; margin-bottom: 20px;">Kollision oder Tor verpasst. Sensoren
                     neu kalibrieren.</p>
             </div>
-            <button class="modal-btn-red" onclick="window.location.reload()">NEUSTART</button>
+            <button class="modal-btn-red" onclick="window.restartRace()">NEUSTART</button>
         </div>
 
         <!-- Success Widescreen Dashboard (Success State) -->
@@ -146,7 +146,14 @@
                     <div class="dashboard-section-title">
                         <span class="sect-icon">🎒</span> HINT: PACKLISTE
                     </div>
+                    <div class="packlist-hint">
+                        Pack dini Sache und mach di parat (au mental): Dunnstig 04.06.2026 13:00
+                    </div>
                     <div class="packlist-container">
+                        <div class="packlist-item checked">
+                            <span class="checkbox">✓</span>
+                            <span class="pack-text">🪪 ID / Pass</span>
+                        </div>
                         <div class="packlist-item checked">
                             <span class="checkbox">✓</span>
                             <span class="pack-text">🩳 Badehose / Badeshorts</span>

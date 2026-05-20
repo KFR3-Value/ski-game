@@ -9,6 +9,7 @@ let introTimer = 0;
 let skierMatJacket, skierMatPants, skierMatHelmet, skierMatSkis, skierMatRightSleeve;
 let startBar;
 let stopwatchCtx, stopwatchTexture; // For the digital Stoppuhr
+let introTimeout1, introTimeout2; // Saved references for clearing timeouts
 
 function pseudoRandom(seed) {
     let x = Math.sin(seed * 9999.9999) * 10000;
@@ -1317,17 +1318,62 @@ let currentCarveImpulse = 36;
 let currentGripDamping = 0.94;
 
 function startIntroCutscene() {
+    // Clear any existing active intro cutscene timeouts
+    if (introTimeout1) clearTimeout(introTimeout1);
+    if (introTimeout2) clearTimeout(introTimeout2);
+
     gameState = 'intro';
     introTimer = 0;
+
+    // Reset clock delta to avoid initial time jump from pause/fail screen idle time
+    if (clock) {
+        clock.getDelta();
+    }
+
+    // Reset skier base position & visual poses to standing position
+    if (skier) {
+        skier.position.set(0, 10, 12);
+        skier.rotation.set(0, 0, 0);
+        for (let partName in skier.userData.parts) {
+            const part = skier.userData.parts[partName];
+            const startState = skier.userData.poseStanding[partName];
+            if (startState && startState.pos) part.position.fromArray(startState.pos);
+            if (startState && startState.rot) part.rotation.fromArray(startState.rot);
+        }
+    }
+
+    // Reset gameplay/physics variables
+    speed = 0;
+    lateralSpeed = 0;
+    timeElapsed = 0;
+    if (timerEl) timerEl.innerText = formatTime(0);
+    if (speedEl) speedEl.innerText = "0";
+
+    // Reset starting gate door
+    if (startBar) {
+        startBar.visible = true;
+        startBar.rotation.y = 0;
+    }
+
+    // Reset passing status for all gates
+    if (gates) {
+        gates.forEach(gate => {
+            gate.passed = false;
+        });
+    }
+
+    // Reset player steer input
+    input = { left: false, right: false };
+
+    // Reset touch steer knobs visual translation
+    const knobLeft = document.getElementById('knob-left');
+    const knobRight = document.getElementById('knob-right');
+    if (knobLeft) knobLeft.style.transform = 'translateX(0)';
+    if (knobRight) knobRight.style.transform = 'translateX(0)';
 
     // Hide the Service Room UI
     document.getElementById('service-room').classList.remove('active');
     document.getElementById('spotify-player-widget').classList.remove('visible');
-
-    // Ensure the starting gate bar is visible when the race intro starts
-    if (startBar) {
-        startBar.visible = true;
-    }
 
     // Keep screen hidden during clear-view phase (first 2s)
     // The overlay will appear only after the swerve starts
@@ -1341,12 +1387,12 @@ function startIntroCutscene() {
     camera.lookAt(cameraTarget);
 
     // Show the overlay only when the countdown starts (after swerve finishes at 5s)
-    setTimeout(() => {
+    introTimeout1 = setTimeout(() => {
         screenEl.classList.add('active');
     }, 5000);
 
     // Total intro: 2s hold + 3s swerve/zoom + 3s countdown/tuck = 8s
-    setTimeout(() => {
+    introTimeout2 = setTimeout(() => {
         gameState = 'playing';
         // Gate push impulse — skier pushes out of the starting gate
         // This carries them off the flat platform onto the slope where gravity takes over
@@ -1357,14 +1403,24 @@ function startIntroCutscene() {
         // Initialize skier to standing pose when race starts
         for (let partName in skier.userData.parts) {
             const part = skier.userData.parts[partName];
-            const start = skier.userData.poseStanding[partName];
-            if (start.pos) part.position.fromArray(start.pos);
-            if (start.rot) part.rotation.fromArray(start.rot);
+            const startState = skier.userData.poseStanding[partName];
+            if (startState && startState.pos) part.position.fromArray(startState.pos);
+            if (startState && startState.rot) part.rotation.fromArray(startState.rot);
         }
 
         clock.start();
     }, 8000);
 }
+
+// Global function to trigger a clean restart directly from the failure overlay
+window.restartRace = function () {
+    // Hide results modal
+    document.getElementById('result-modal').style.display = 'none';
+    document.getElementById('fail-modal-box').style.display = 'none';
+
+    // Start cutscene again
+    startIntroCutscene();
+};
 
 function setupControls() {
     window.addEventListener('keydown', (e) => {
@@ -1594,6 +1650,15 @@ function animate() {
                 // If the player is outside the gate bounds when passing its Z axis
                 if (skier.position.x < gate.minX || skier.position.x > gate.maxX) {
                     gameState = 'failed';
+
+                    // Pick a random failure message to show the player
+                    const failTextEl = document.getElementById('fail-modal-text');
+                    if (failTextEl) {
+                        const randomVal = Math.random() < 0.5;
+                        failTextEl.innerText = randomVal
+                            ? "Bschiiissiii Chäib! Zrugg an start!"
+                            : "Im Lebe gitts kei Abchürzige Krummenacher - du weisch es!";
+                    }
 
                     // Display Whiteout Result Modal
                     document.getElementById('result-modal').style.display = 'flex';
